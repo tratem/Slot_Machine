@@ -4,13 +4,13 @@ TOTAL_DEPOSIT = 0
 ROWS = 3
 COLUMNS = 5
 WIN3 = 5
-WIN4 = 12
-WIN5 = 30
+WIN4 = 10
+WIN5 = 20
 JACKPOT = 900
 
 def deposit():
     while True:
-        amount = input("How much do you want to deposit? ")
+        amount = input("How much $ do you want to deposit? ")
         if amount.isdigit():
             amount = float(amount)
             if amount > 0:
@@ -24,9 +24,9 @@ def deposit():
     
     return amount
 
-def bet():
+def bet(credits):
     while True:
-        hand_value = input("Your total credit balance is: " + str(TOTAL_DEPOSIT * 100) + "\n" + "Please enter betting value in credits: ")
+        hand_value = input("Your total credit balance is: " + str(credits) + "\n" + "Please enter betting value in credits: ")
         if hand_value.isdigit():
             hand_value = float(hand_value)
             if hand_value >= 10:
@@ -44,7 +44,7 @@ def game(hand):
     for i in range(ROWS):
         row = []  
         for j in range(COLUMNS):
-            random_number = random.randint(1, 7)
+            random_number = random.randint(1, 9)
             row.append(random_number)
         matrix.append(row)  
     
@@ -108,10 +108,39 @@ def game(hand):
     return prize 
     
 def main():
-
     credits = deposit() * 100
-    hand = bet()
+    hand = bet(credits)
     credits -= hand
     credits += game(hand) 
-    print ("Credits now: " + str(credits))
+    
+    while True:
+        print ("Credits now: " + str(credits))
+        user_input = input("Press Enter to continue, type 'q' to quit, type 'c' to add credits or type 'b' to change the betting value: ").upper()
+        if user_input == '' and credits < hand:
+            print("Sorry, you don have enough credits. Do you want to add more [C]redit, do you want to change the [B]et value, or do you want to [Q]uit the game")
+            low_credit_input = input("").upper()
+            if low_credit_input == 'C': #deposit
+                credits += deposit() * 100
+                continue
+            elif low_credit_input == 'B': #change betting value
+                hand = bet(credits)
+                continue
+            elif low_credit_input == 'Q': #cashout
+                print("Cashing out. Thanks for playing")
+                break
+        elif user_input == '': #new round
+            credits -= hand
+            credits += game(hand)
+            continue
+        elif user_input == 'Q': #cashout
+            print("Cashing out. Thanks for playing")
+            break
+        elif user_input == 'C': #deposit 
+            credits += deposit() * 100
+            continue
+        elif user_input == 'B': #change betting value
+            hand = bet(credits)
+            continue
+        
+    
 main()
